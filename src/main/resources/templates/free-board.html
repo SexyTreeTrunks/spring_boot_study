@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>board 0-9</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<!-- 
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/bootstrap-theme.min.css">
+	 -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+	
+</head>
+<body leftmargin="30">
+<div class="container">
+	<div>
+		<h1>Board List</h1>
+	</div>
+	<div class="table-division">
+	<table class="table table-striped">
+		<tr>
+			<th>BNO</th>
+			<th>TITLE</th>
+			<th>WRITER</th>
+			<th>UPDATED</th>
+		</tr>
+		<tr th:each="entry : ${contents}">
+			<td width="5%" th:text="${entry.bno}"></td> 
+			<td width="60%" th:text="${entry.title}"></td>
+			<td width="10%" th:text="${entry.writer}"></td>
+			<td width="25%" th:text="${#dates.format(entry.regdate,'yyyy-mm-dd hh:mm:ss')}"></td>
+		</tr>
+	</table>
+	</div>
+	<div class="jb-center">
+		<ul class="pagination">
+			<li th:if="${pages.hasPrevious()}==true"> 
+				<a th:href="@{'~/free-board?pNo=' + ${pages.previousPageable().getPageNumber() +1}}">이전</a>
+			</li>
+			<th:block th:each="idx : ${#numbers.sequence(1,10)}">
+			<li th:class="${idx}==(${pages.getNumber()} + 1)? active : ''">
+				<a th:href="@{'~/free-board?pNo=' + ${idx}}" th:text="${idx}"></a>
+			</li>
+			</th:block>
+			<li th:if="${pages.hasNext()}==true"> 
+				<a th:href="@{'~/free-board?pNo=' + ${pages.nextPageable().getPageNumber() +1}}">다음</a>
+			</li>
+		</ul>
+	</div>
+	<button type="button" class="btn btn-success btn-lg">BUTTON</button>
+</div>
+	
+	<!--
+	<script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
+	<script type="text/javascript" src="js/bootstrap.min.js"></script> 
+	 -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+</body>
+</html>
