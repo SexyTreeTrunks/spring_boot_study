@@ -1,5 +1,7 @@
 package org.zerock;
 
+import java.util.ArrayList;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,8 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.zerock.domain.WebBoard;
+import org.zerock.domain.WebBoardReply;
+import org.zerock.persistence.WebBoardReplyRepository;
 import org.zerock.persistence.WebBoardRepository;
 
 @RunWith(SpringRunner.class)
@@ -20,6 +24,8 @@ import org.zerock.persistence.WebBoardRepository;
 public class WebBoardRepoTest {
 	@Autowired
 	WebBoardRepository repo;
+	@Autowired
+	WebBoardReplyRepository rrepo;
 	
 	@Test
 	public void insertDummis() {
@@ -28,6 +34,15 @@ public class WebBoardRepoTest {
 			board.setTitle("title" + (i+1));
 			board.setContent("content..." + (i+1));
 			board.setWriter("user0" + (i%10));
+			ArrayList<WebBoardReply> list = new ArrayList();
+			for(int j =0; j <10; j++) {
+				WebBoardReply reply = new WebBoardReply();
+				reply.setReply("reply....");
+				reply.setReplyer("user0" + j);
+				reply.setBoard(board);
+				list.add(reply);
+			}
+			board.setReplies(list);
 			repo.save(board);
 		}
 	}
@@ -37,5 +52,19 @@ public class WebBoardRepoTest {
 		Pageable pageable = PageRequest.of(6, 15, Sort.Direction.DESC,"bno");
 		Page<WebBoard> result = repo.findAll(repo.makePredicate("t", "10"),pageable);
 		result.getContent().forEach(board->System.out.println(board));
+	}
+	
+	@Test
+	public void insertReplyDummies() {
+		repo.findAll().forEach(board -> {
+			for(int i =0; i <10; i++) {
+				WebBoardReply reply = new WebBoardReply();
+				reply.setReply("reply....");
+				reply.setReplyer("user0" + i);
+				reply.setBoard(board);
+				rrepo.save(reply);
+			}	
+		});
+		
 	}
 }

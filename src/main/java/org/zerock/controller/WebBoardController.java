@@ -54,7 +54,11 @@ public class WebBoardController {
 	
 	@GetMapping("/view")
 	public void view(Long bno, @ModelAttribute("pageVO")PageVO vo, Model model) {
-		repo.findById(bno).ifPresent(board -> model.addAttribute("vo", board));
+		repo.findById(bno).ifPresent(board -> {
+			model.addAttribute("board", board);
+			model.addAttribute("replies", board.getReplies());
+		});
+		
 	}
 	
 	@GetMapping("/modify")
