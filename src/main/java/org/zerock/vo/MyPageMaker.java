@@ -1,48 +1,51 @@
 package org.zerock.vo;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import lombok.Getter;
 import lombok.ToString;
 
 @Getter
-@ToString(exclude="pageList")
+@ToString(exclude="content")
 public class MyPageMaker<T> {
-	private static final int DEFAULT_COUNTPAGE = 10;
-	private Page<T> result;
+	private static final int DEFAULT_PAGELIST_SIZE = 10;
+	private List<T> content;
 	
-	private Pageable prevPage;
-	private Pageable nextPage;
-	private Pageable curPage;
-	
+	private int prevPageNum;
+	private int nextPageNum;
 	private int curPageNum;
+	
+	private int curPageSize;
 	private int totalPageNum;
 	
-	private int countListNum; //한 페이지에 출력될 게시물 수
-	private int countPageNum; // 한 화면에 출력될 페이지번호 수
+	private int startPageNum;
+	private int endPageNum;
 	
-	private List<Pageable> pageList;
-	
-	MyPageMaker(Page<T> result) {
-		this.result = result;
-		this.curPage = result.getPageable();
-		this.curPageNum = curPage.getPageNumber() + 1;
+	public MyPageMaker(Page<T> result) {
+		this.content = result.getContent();
+		this.curPageSize = result.getPageable().getPageSize();
+		this.curPageNum = result.getPageable().getPageNumber() + 1;
 		this.totalPageNum = result.getTotalPages();
-		this.pageList = new ArrayList<>();
-		this.countListNum = result.getSize();
-		int tempcountPage = totalPageNum - curPageNum;
-		this.countPageNum = (tempcountPage < DEFAULT_COUNTPAGE)? tempcountPage : DEFAULT_COUNTPAGE;  
 		calcPages();
 	}
 	
 	private void calcPages() {
-		
-		
-		
+		prevPageNum = ((curPageNum - 1) / DEFAULT_PAGELIST_SIZE) * DEFAULT_PAGELIST_SIZE;
+		startPageNum = prevPageNum + 1;
+		if((startPageNum + DEFAULT_PAGELIST_SIZE) > totalPageNum)
+			endPageNum = totalPageNum;
+		else
+			endPageNum = prevPageNum + 10;
+		nextPageNum = endPageNum + 1;
 	}
-
+	
+	public boolean hasPrevPage() {
+		return (prevPageNum == 0)? false : true;
+	}
+	
+	public boolean hasNextPage() {
+		return (nextPageNum > totalPageNum)? false : true;
+	}
 }

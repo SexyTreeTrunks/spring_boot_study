@@ -167,3 +167,36 @@ $(document).ready(function() {
     - prevPage,nextPage,pageList안에 들어있는 pageable정보 중 오로지 페이지번호에 대한 정보만 view에서 쓰임
     - pageMaker가 페이지번호만 넘겨주도록 수정 필요 (그럼 model에 보내는 데이터의 양도 줄어들겠징?)
 
+#### PageMaker 수정(MyPageMaker) 
+- 수정한 pagemaker에는 view에 필요한 정보만 담았음 (content, curPageNum, curPageSize,,)
+- prevPageNum 계산시 curPageNum값에 1빼고 하는게 계산식이 간단함
+- 마지막 페이지리스트는 10개 미만일수 있으므로 이떄의 endPageNum은 totalPageNum값으로 함
+- hasPrevPage랑 hasNextPage도 추가함
+```
+public MyPageMaker(Page<T> result) {
+    this.content = result.getContent();
+    this.curPageSize = result.getPageable().getPageSize();
+    this.curPageNum = result.getPageable().getPageNumber() + 1;
+    this.totalPageNum = result.getTotalPages();
+    calcPages();
+}
+
+private void calcPages() {
+    prevPageNum = ((curPageNum - 1) / DEFAULT_PAGELIST_SIZE) * DEFAULT_PAGELIST_SIZE;
+    startPageNum = prevPageNum + 1;
+    if((startPageNum + DEFAULT_PAGELIST_SIZE) > totalPageNum)
+        endPageNum = totalPageNum;
+    else
+        endPageNum = prevPageNum + 10;
+    nextPageNum = endPageNum + 1;
+}
+
+public boolean hasPrevPage() {
+    return (prevPageNum == 0)? false : true;
+}
+
+public boolean hasNextPage() {
+    return (nextPageNum > totalPageNum)? false : true;
+}
+```
+
