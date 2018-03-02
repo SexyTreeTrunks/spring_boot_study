@@ -4,6 +4,7 @@
 <div layout:fragment="content">
 	<div class="panel-heading">View Page</div>
 	<div class="panel-body">
+		<form id='f1'>
 		<div class="form-group">
 			<label>BNO</label>
 			<input class="form-control" name="bno" th:value="${vo.bno}" readonly="readonly" />
@@ -20,7 +21,6 @@
 		<div class="form-group">
 			<label>Writer</label> <input class="form-control" name="writer" th:value="${vo.writer}" readonly="readonly" />
 		</div>
-		<form id='f1'>
 		<input type='hidden' name="page" th:value="${pageVO.page}">
 		<input type='hidden' name="size" th:value="${pageVO.size}">
 		<input type='hidden' name="type" th:value="${pageVO.type}">
