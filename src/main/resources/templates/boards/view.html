@@ -19,7 +19,7 @@
 		</div>
 		<div class="form-group">
 			<label>Content</label>
-			<textarea class="form-control" rows="3" name='content' th:text="${board.content}" readonly="readonly"></textarea>
+			<textarea class="form-control" rows="3" name='content' th:text="${board.content}" readonly></textarea>
 		</div>
 		<div class="form-group">
 			<label>Writer</label> <input class="form-control" name="writer" th:value="${board.writer}" readonly="readonly" />
@@ -36,13 +36,58 @@
 		</div>
 	</div>
 </div>
-<!-- end fragment -->
+<!-- end content fragment -->
+<div layout:fragment="replies">
+	<div class="panel-body container">
+		<form id="replyregister">
+			<div class="form-group row">
+				<div class="col-xs-4">
+					<input type="text" id="replyer" name="replyer" class="form-control" placeholder="User Name">			
+				</div>
+				<div class="input-group col-xs-8">
+					<input type="text" id="reply" name="reply" class="form-control" placeholder="Comment here..">
+					<span class="input-group-btn">
+						<button class="btn btn-primary submitbtn" type="button">Submit</button>
+					</span>
+				</div>
+			</div>
+			<input type='hidden' name="vo" th:value="${pageVO}">
+			<input type='hidden' name="bno" th:value="${board.bno}">
+		</form>
+	</div>
+	<div class="panel-body">
+		<table class="table">
+			<tr th:each="reply:${replies}">
+				<td class="center col-xs-2">[[${reply.replyer}]]</td>
+				<td class="col-xs-8"><a href="#">[[${reply.reply}]]</a></td>
+				<td class="center col-xs-2">[[${#dates.format(reply.regdate,'yyyy-MM-dd')}]]</td>
+			</tr>
+		</table>
+	</div>
+</div>
+<!-- end replies fragment -->
 <th:block layout:fragment="script">
 	<script th:inline="javascript">
 	$(document).ready(function(){
-		var formObj=$("#f1");
 		$(".delbtn").click(function(){
+			var formObj=$("#f1");
 			formObj.attr("action","delete");
+			formObj.attr("method","post");
+			formObj.submit();
+		});
+		$(".submitbtn").click(function(){
+			var formObj = $("#replyregister");
+			if($("#replyer").val()=="") {
+				alert("user name is empty");
+				$("#replyer").focus();
+				return false;
+			}
+			if($("#reply").val()=="") {
+				alert("comment is empty");
+				$("#reply").focus();
+				return false;
+			}
+			formObj.attr("action","/reply/regitser");
 			formObj.attr("method","post");
 			formObj.submit();
 		});
