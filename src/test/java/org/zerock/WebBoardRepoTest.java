@@ -15,8 +15,10 @@ import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.zerock.domain.WebBoard;
 import org.zerock.domain.WebBoardReply;
+import org.zerock.domain.WebReply;
 import org.zerock.persistence.WebBoardReplyRepository;
 import org.zerock.persistence.WebBoardRepository;
+import org.zerock.persistence.WebReplyRepository;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -26,6 +28,8 @@ public class WebBoardRepoTest {
 	WebBoardRepository repo;
 	@Autowired
 	WebBoardReplyRepository rrepo;
+	@Autowired
+	WebReplyRepository wrrepo;
 	
 	@Test
 	public void insertDummis() {
@@ -42,7 +46,7 @@ public class WebBoardRepoTest {
 				reply.setBoard(board);
 				list.add(reply);
 			}
-			board.setReplies(list);
+			//board.setReplies(list);
 			repo.save(board);
 		}
 	}
@@ -58,11 +62,11 @@ public class WebBoardRepoTest {
 	public void insertReplyDummies() {
 		repo.findAll().forEach(board -> {
 			for(int i =0; i <10; i++) {
-				WebBoardReply reply = new WebBoardReply();
+				WebReply reply = new WebReply();
 				reply.setReply("reply....");
 				reply.setReplyer("user0" + i);
 				reply.setBoard(board);
-				rrepo.save(reply);
+				wrrepo.save(reply);
 			}	
 		});
 		

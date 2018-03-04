@@ -1,19 +1,18 @@
 package org.zerock.domain;
 
 import java.sql.Timestamp;
-import java.util.List;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -22,23 +21,23 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@ToString(exclude="replies")
+@ToString(exclude="board")
 @Entity
-@Table(name="webboards")
-@EqualsAndHashCode(of="bno")
-public class WebBoard {
+@Table(name="webreplies")
+@EqualsAndHashCode(of="rno")
+public class WebReply {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private Long bno;
-	private String title;
-	private String content;
-	private String writer;
+	private Long rno;
+	private String reply;
+	private String replyer;
 	
-	@OneToMany(mappedBy="board", fetch=FetchType.LAZY)
-	private List<WebReply> replies;
+	@JsonIgnore
+	@ManyToOne(fetch=FetchType.LAZY)
+	private WebBoard board;
 	
 	@CreationTimestamp
 	private Timestamp regdate;
 	@UpdateTimestamp
-	private Timestamp moddate;
+	private Timestamp updatedate;
 }
