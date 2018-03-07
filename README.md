@@ -200,3 +200,121 @@ public boolean hasNextPage() {
 }
 ```
 
+## 3. WebBoardReply 
+WebBoard에서 구현한 코드를 이용해서 댓글 기능을 구현해 보았다.
+
+#### Controller 코드
+- view에서 게시물과 댓글을 함께 볼수있도록 WebBoardController에서 replies도 model에 보냄
+- reply관련 처리를 하는 url에서 작업을 마치고 view로 다시 돌아가야 하기 때문에 controller에서 model에 보내야 할 attribute가 많음
+
+```
+@RequestMapping("/reply")
+public class WebBoardReplyController {
+...
+@PostMapping("/register")
+    public String register(String replyer, String reply,
+            Long bno, PageVO vo, 
+            Model model, RedirectAttributes rttr) {
+        brepo.findById(bno).ifPresent(b->{
+            WebBoardReply webreply = new WebBoardReply();
+            webreply.setReply(reply);
+            webreply.setReplyer(replyer);
+            webreply.setBoard(b);
+            brrepo.save(webreply);
+        });
+        
+        rttr.addAttribute("bno", bno);
+        rttr.addAttribute("page", vo.getPage());
+        rttr.addAttribute("size", vo.getSize());
+        rttr.addAttribute("type", vo.getType());
+        rttr.addAttribute("keyword", vo.getKeyword());
+        rttr.addFlashAttribute("msg","reg_success");
+        return "redirect:/boards/view";
+    }
+    
+    @PostMapping("/modify")
+    public String modify(WebBoardReply reply, Long bno, 
+            @ModelAttribute("vo")PageVO vo, Model model, RedirectAttributes rttr) {
+        brrepo.findById(reply.getRno()).ifPresent(origin -> {
+            origin.setReply(reply.getReply());
+            origin.setReplyer(reply.getReplyer());
+            brrepo.save(origin);
+        });
+        
+        rttr.addAttribute("bno", bno);
+        rttr.addAttribute("page", vo.getPage());
+        rttr.addAttribute("size", vo.getSize());
+        rttr.addAttribute("type", vo.getType());
+        rttr.addAttribute("keyword", vo.getKeyword());
+
+        rttr.addFlashAttribute("msg", "mod_success");
+        return "redirect:/boards/view";
+    }
+```
+
+#### View 코드
+- view코드에서도 reply처리 후 다시 view로 돌아오기 위한 vo와 bno값을 전송해야 한다
+
+```
+<div layout:fragment="replies">
+    <div class="panel-body container">
+        <form id="replyregister">
+            <div class="form-group row">
+                <div class="col-xs-4">
+                    <input type="text" id="replyer" name="replyer" class="form-control" placeholder="User Name">            
+                </div>
+                <div class="input-group col-xs-8">
+                    <input type="text" id="reply" name="reply" class="form-control" placeholder="Comment here..">
+                    <span class="input-group-btn">
+                        <button class="btn btn-primary submitbtn" type="button">Submit</button>
+                    </span>
+                </div>
+            </div>
+            <input type='hidden' name="vo" th:value="${pageVO}">
+            <input type='hidden' name="bno" th:value="${board.bno}">
+        </form>
+    </div>
+    <div class="panel-body">
+        <table class="table">
+            <tr th:each="reply:${replies}">
+                <td class="center col-xs-2">[[${reply.replyer}]]</td>
+                <td class="col-xs-8"><a href="#">[[${reply.reply}]]</a></td>
+                <td class="center col-xs-2">[[${#dates.format(reply.regdate,'yyyy-MM-dd')}]]</td>
+            </tr>
+        </table>
+    </div>
+</div>
+```
+
+- 자바스크립트에선 댓글 추가 코드만 구현했다
+- 입력값이 null일 때의 처리도 함께 넣음
+
+```
+$(".submitbtn").click(function(){
+            var formObj = $("#replyregister");
+            if($("#replyer").val()=="") {
+                alert("user name is empty");
+                $("#replyer").focus();
+                return false;
+            }
+            if($("#reply").val()=="") {
+                alert("comment is empty");
+                $("#reply").focus();
+                return false;
+            }
+            formObj.attr("action","/reply/regitser");
+            formObj.attr("method","post");
+            formObj.submit();
+        });
+```
+
+#### 문제점
+- @Controller인 WebBoardReplyController는 Crud처리 후 view를 리턴해야 함
+- 하지만 댓글처리는 한 페이지(view)안에서 모두 이루어짐
+    - **ajax를 이용하자!**
+- controller에서 바로 view로 이동하는 기존 방식때문에 다시 원래 view로 돌아오기 위해선  vo, bno 정보가 필요했음.
+- 이는 controller에서 댓글 처리하는데 쓰이지 않는 정보임
+- 따라서 controller와 view 사이에 
+    - **@RestController를 이용하자!**
+
+
