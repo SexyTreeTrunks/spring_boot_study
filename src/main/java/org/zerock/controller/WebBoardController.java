@@ -58,7 +58,6 @@ public class WebBoardController {
 			model.addAttribute("board", board);
 			model.addAttribute("replies", board.getReplies());
 		});
-		
 	}
 	
 	@GetMapping("/modify")

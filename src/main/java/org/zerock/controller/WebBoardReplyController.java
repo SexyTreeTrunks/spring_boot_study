@@ -51,6 +51,12 @@ public class WebBoardReplyController {
 			brrepo.save(origin);
 		});
 		
+		rttr.addAttribute("bno", bno);
+		rttr.addAttribute("page", vo.getPage());
+		rttr.addAttribute("size", vo.getSize());
+		rttr.addAttribute("type", vo.getType());
+		rttr.addAttribute("keyword", vo.getKeyword());
+
 		rttr.addFlashAttribute("msg", "mod_success");
 		return "redirect:/boards/view";
 	}

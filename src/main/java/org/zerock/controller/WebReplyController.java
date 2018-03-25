@@ -27,12 +27,12 @@ public class WebReplyController {
 	
 	@Transactional
 	@PostMapping("/{bno}")
-	public ResponseEntity<List<WebReply>> addReply(@PathVariable("bno")Long bno, @RequestBody WebReply reply) {
+	public ResponseEntity<WebReply> addReply(@PathVariable("bno")Long bno, @RequestBody WebReply reply) {
 		WebBoard board = new WebBoard();
 		board.setBno(bno);
 		reply.setBoard(board);
 		replyrepo.save(reply);
-		return new ResponseEntity<>(getRepliesByBoard(board), HttpStatus.CREATED);
+		return new ResponseEntity<>(reply, HttpStatus.CREATED);
 	}
 	
 	
@@ -50,7 +50,6 @@ public class WebReplyController {
 			@RequestBody WebReply reply) {
 		replyrepo.findById(reply.getRno()).ifPresent(origin->{
 			origin.setReply(reply.getReply());
-			origin.setReplyer(reply.getReplyer());
 			replyrepo.save(origin);
 		});
 		WebBoard board = new WebBoard();
@@ -60,13 +59,13 @@ public class WebReplyController {
 	
 	@Transactional
 	@DeleteMapping("/{bno}/{rno}")
-	public ResponseEntity<List<WebReply>> deleteReply(
+	public ResponseEntity<Long> deleteReply(
 			@PathVariable("bno")Long bno,
 			@PathVariable("rno")Long rno) {
 		replyrepo.deleteById(rno);
 		WebBoard board = new WebBoard();
 		board.setBno(bno);
-		return new ResponseEntity<List<WebReply>>(getRepliesByBoard(board), HttpStatus.OK);
+		return new ResponseEntity<Long>(rno, HttpStatus.OK);
 	}
 	
 	private List<WebReply> getRepliesByBoard(WebBoard board) throws RuntimeException{

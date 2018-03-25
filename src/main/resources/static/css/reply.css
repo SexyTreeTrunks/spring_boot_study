@@ -1,0 +1,36 @@
+.reply-block {
+	overflow:hidden;
+	height:auto;
+}
+
+.reply-text {
+  margin-bottom: 1.25rem;
+  word-break:break-all;
+}
+
+.bottom-reply {
+  color: #acb4c2;
+}
+
+.reply-date {
+  float: right;
+  color: #acb4c2;
+  font-size: 0.875rem;
+}
+
+.reply-actions {
+  float: right;
+  font-size: 1em;
+}
+.reply-actions li {
+  display: inline;
+  cursor: pointer;
+}
+.reply-actions li.modify-reply {
+  padding-right: 0.75rem;
+}
+.reply-actions li.delete-reply {
+}
+.reply-actions li:hover {
+  color: #0095ff;
+}

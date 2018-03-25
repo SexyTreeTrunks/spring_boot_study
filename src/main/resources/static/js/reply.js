@@ -14,10 +14,23 @@ var replyManager = (function() {
         });
     };
     var update = function(obj, callback) {
-        
+        $.ajax({
+            type:'put',
+            url:'/replies/' + obj.bno,
+            data:JSON.stringify(obj),
+            contentType:"application/json",
+            success:callback
+        });
     };
+    
     var remove = function(obj, callback) {
-        
+        $.ajax({
+            type:'delete',
+            url:'/replies/' + obj.bno + '/' + obj.rno,
+            data:JSON.stringify(obj),
+            contentType:"application/json",
+            success:callback
+        });
     };
     
     return {
