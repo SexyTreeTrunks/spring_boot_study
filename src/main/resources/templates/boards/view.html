@@ -35,26 +35,24 @@
 			<label>RegDate</label> <input class="form-control" name="regdate" th:value="${#dates.format(board.regdate,'yyyy-MM-dd')}" readonly="readonly" />
 		</div>
 		<div class="container">
-			<div class="list-group" id="reply-list">
-				<th:block th:each="reply:${replies}">
-					<div class="list-group-item reply-block" th:id="${reply.rno}">
-						<small> <span style="font-weight: bold">[[${reply.replyer}]]</span>
-						</small>
-						<div class="reply-date">[[${reply.regdate}]]</div>
-						<div class="reply-text">[[${reply.reply}]]</div>
-						<div class="bottom-reply">
-							<ul class="reply-actions">
-								<li class="modifyReplyBtn" th:value=${reply.rno}>modify</li>
-								<li class="deleteReplyBtn" th:value=${reply.rno}>delete</li>
-							</ul>
-						</div>
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<div class="col-xs-4 form-group">
+						<input type="text" class="form-control" name='newReplyer' placeholder="replyer"> 
 					</div>
-				</th:block>
+					<div class="col-xs-12 form-group">
+						<textarea class="form-control" rows="3" name="newReply" placeholder="reply"></textarea>
+					</div>
+					<div class="pull-right">
+						<button class="btn " id="addReplyBtn" th:onclick="'javascript:replyEvent.onAdd('+${board.bno} + ')'">Add Reply</button>
+					</div>
+				</div>
 			</div>
-			<div class="pull-right">
-				<button class="btn " id="addReplyBtn">Add Reply</button>
+			<div class="list-group" id="reply-list">
+				
 			</div>
 		</div>
+		<!-- container -->
 	</div>
 	<!--Modal -->
 	<div id="myModal" class="modal fade" role="dialog">
@@ -79,25 +77,6 @@
 	    </div>
 	</div>
 	<!-- end modal-->
-	<!-- Confirm Modal -->
-	<div class="modal fade" tabindex="-1" role="dialog"
-		aria-labelledby="mySmallModalLabel" aria-hidden="true" id="confirmModal">
-		<div class="modal-dialog modal-sm">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"
-						aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-					<h4 class="modal-title">삭제하시겠습니까</h4>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" id="Modal-btn-yes">Yes</button>
-					<button type="button" class="btn btn-primary" id="Modal-btn-no">No</button>
-				</div>
-			</div>
-		</div>
-	</div>
 </div>
 <!-- end content fragment -->
 
@@ -106,95 +85,20 @@
 	<script th:inline="javascript" th:src="@{'/js/reply.js?ver=1'}"></script>
 	<script th:inline="javascript">
 	$(document).ready(function(){
-		
-		var mode;
 		        
         var bno=[[${board.bno}]];
         var replyObj=$("input[name='reply']");
         var replyerObj=$("input[name='replyer']");
-        var rno;
         
-        $("#modalBtn").click(function(){
-        	if(mode=='ADD') {
-        		var reply = replyObj.val();
-	        	var replyer = replyerObj.val();
-	        
-	        	var obj= {reply:reply, replyer:replyer, bno:bno};
-	            
-	        	replyManager.add(obj, function(reply) {
-	        		var str = '<div class="list-group-item reply-block" id="'+ reply.rno + '">'
-					+ '<small><span style="font-weight:bold">' + reply.replyer + '</span></small>'
-					+ '<div class="reply-date">' + reply.regdate + '</div>'
-					+ '<div class="reply-text">' + reply.reply + '</div>'
-					+ '<div class="bottom-reply">'
-					+ '<ul class="reply-actions">'
-					+ '<li class="modifyReplyBtn" th:value="'+ reply.rno + '"> modify </li>'
-					+ '<li class="deleteReplyBtn" th:value="' + reply.rno + '"> delete </li>'
-					+ '</ul>' + '</div>' + '</div>';
-					
-					$("#reply-list").append(str);
-					
-					rno = reply.rno;
-					$(".modifyReplyBtn").on('click',function() {
-						$("#myModal").modal("show");
-						$(".modal-title").text("modify reply");
-						mode = 'MOD';
-					});
-					
-					$(".deleteReplyBtn").on('click',function() {
-						var obj = {bno:bno, rno:rno};
-						replyManager.remove(obj, function(rno) {
-						    console.log("it's success, rno is " + rno);
-							//$("#reply-list").find("#"+rno).remove();
-							$(document).find("#"+rno).remove();
-							alert("댓글이 삭제되었습니다");
-						});
-					});
-					
-					alert("새로운 댓글이 추가되었슴니다");
-					$("#myModal").modal("hide");
-					replyObj.val("");
-					replyerObj.val("");
-				});
-	        	
-	        } else if(mode=='MOD') {
-	        	var reply = replyObj.val();
-        		var obj = {reply:reply, rno:rno, bno:bno};
-        		replyManager.update(obj, function() {
-        			console.log("rno: " + rno);
-					//$("#"+rno).find(".reply-text").text(reply);
-					$(document).find("#"+rno).find(".reply-text").text(reply);
-					alert("댓글이 변경되었습니다");
-					$("#myModal").modal("hide");
-					replyObj.val("");
-	            	replyerObj.val("");
-        		});
+        replyManager.getAll(bno, function(list) {
+        	var str = "";
+        	for(var i=0; i<list.length; i++) {
+        		var reply = list[i];
+        		str += toReplyListItemStr(reply, bno);
         	}
+       		$("#reply-list").html(str);
         });
-
-        $("#addReplyBtn").on('click',function(){
-            $("#myModal").modal("show");
-            $(".modal-title").text("add reply");
-            mode = 'ADD';
-        });
-
-        $(".modifyReplyBtn").on('click',function() {
-        	rno = $(this).val();
-        	$("#myModal").modal("show");
-            $(".modal-title").text("modify reply");
-            mode = 'MOD';
-        });
-       	
-       	$(".deleteReplyBtn").on('click',function() {
-       		rno = $(this).val();
-       		var obj = {bno:bno, rno:rno};
-       		replyManager.remove(obj, function(rno) {
-       			console.log("it's success, rno is " + rno);
-	       		$("#reply-list").find("#"+rno).remove();
-       			alert("댓글이 삭제되었습니다");
-       		});
-       	});
-		
+        
 		$(".delbtn").click(function(){
 			var formObj=$("#f1");
 			formObj.attr("action","delete");

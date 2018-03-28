@@ -54,7 +54,7 @@ public class WebReplyController {
 		});
 		WebBoard board = new WebBoard();
 		board.setBno(bno);
-		return new ResponseEntity<>(getRepliesByBoard(board), HttpStatus.CREATED);
+		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 	
 	@Transactional
