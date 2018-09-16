@@ -1,4 +1,4 @@
-<!-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
@@ -7,20 +7,20 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
     <title>Welcome!</title>
-    <style>
-        body {
-            margin-top: 30px;
-            background: url("img/sexy-man-wallpaper.jpg") no-repeat center center fixed;
-            min-height: 100%;
-        }
+<!--     <style>
+    body {
+        margin-top: 30px;
+        background: url("/resources/static/img/sexy-man-wallpaper.jpg") no-repeat center center fixed;
+        min-height: 100%;
+    }
 
-    </style>
+</style> -->
 </head>
-<body>
+<body th:style="'background: url('+ @{/img/sexy-man-wallpaper.jpg}+') no-repeat center center fixed; margin-top:30px;'">
     <div class="container text-center">
         <h1>This is not a sexy site</h1>
         <h4>It's not what it looks like</h4>
         <a th:href="@{/boards/mylist}" class="btn btn-primary btn-xl">Click Me</a>
     </div>
 </body>
-</html> -->
+</html>
