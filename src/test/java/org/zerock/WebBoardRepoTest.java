@@ -14,9 +14,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.zerock.domain.WebBoard;
-import org.zerock.domain.WebBoardReply;
 import org.zerock.domain.WebReply;
-import org.zerock.persistence.WebBoardReplyRepository;
 import org.zerock.persistence.WebBoardRepository;
 import org.zerock.persistence.WebReplyRepository;
 
@@ -27,10 +25,8 @@ public class WebBoardRepoTest {
 	@Autowired
 	WebBoardRepository repo;
 	@Autowired
-	WebBoardReplyRepository rrepo;
-	@Autowired
 	WebReplyRepository wrrepo;
-	
+	/*
 	@Test
 	public void insertDummis() {
 		for(int i =0; i<100; i++) {
@@ -50,7 +46,7 @@ public class WebBoardRepoTest {
 			repo.save(board);
 		}
 	}
-	
+	*/
 	@Test
 	public void testPridicate() {
 		Pageable pageable = PageRequest.of(6, 15, Sort.Direction.DESC,"bno");
